@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:workflow xmlns:ns2="http://vmware.com/vco/workflow" root-name="item2" object-name="workflow:name=generic" id="7a1e8982-0aaa-4d31-9eba-c5bcc7759805" editor-version="2.0" version="0.0.1" api-version="6.0.0" restartMode="1" resumeFromFailedMode="0">
+    <display-name>VM Snapshot</display-name>
+    <position y="50.0" x="100.0"/>
+    <input>
+        <param name="description" type="string"/>
+        <param name="quiesce" type="boolean"/>
+        <param name="memory" type="boolean"/>
+        <param name="name" type="string"/>
+        <param name="vm" type="VC:VirtualMachine"/>
+    </input>
+    <output>
+        <param name="snapshot" type="VC:VirtualMachineSnapshot"/>
+    </output>
+    <attrib name="errMachineHasSnapshot" type="string">
+        <value encoded="n">The virtual machine already has a snapshot</value>
+    </attrib>
+    <workflow-item name="item0" type="end" end-mode="0" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="50.0" x="500.0"/>
+    </workflow-item>
+    <workflow-item name="item1" throw-bind-name="errMachineHasSnapshot" type="end" end-mode="1" comparator="0">
+        <in-binding/>
+        <out-binding/>
+        <position y="110.0" x="220.0"/>
+    </workflow-item>
+    <workflow-item name="item2" out-name="item3" alt-out-name="item1" type="custom-condition" comparator="0">
+        <display-name>VM Has Snapshot?</display-name>
+        <script encoded="false">var snapshots = System.getModule("com.vmware.library.vc.vm.snapshot").getAllSnapshotsOfVM(VM) ;&#13;
+if (snapshots == null || snapshots.lenghth == 0) {&#13;
+    // No snapshots found; proceed with creating a new one&#13;
+    return true;&#13;
+} else {&#13;
+    // Found at least one snapshot; end of workflow&#13;
+    return false;&#13;
+}</script>
+        <in-binding/>
+        <out-binding/>
+        <description>Custom decision based on a custom script.</description>
+        <position y="50.0" x="180.0"/>
+    </workflow-item>
+    <workflow-item name="item3" out-name="item0" type="link" linked-workflow-id="BD80808080808080808080808080808053C180800122528313869552e41805bb1" comparator="0">
+        <display-name>Create a Snapshot</display-name>
+        <script encoded="false"></script>
+        <in-binding>
+            <bind name="vm" type="VC:VirtualMachine" export-name="vm">
+                <description>Virtual machine of which to create a snapshot</description>
+            </bind>
+            <bind name="name" type="string" export-name="name">
+                <description>Snapshot name. The name need not be unique for this virtual machine.</description>
+            </bind>
+            <bind name="description" type="string" export-name="description">
+                <description>Snapshot description.</description>
+            </bind>
+            <bind name="memory" type="boolean" export-name="memory">
+                <description>If TRUE, the snapshot includes a dump of the internal state of the virtual machine (a memory dump). </description>
+            </bind>
+            <bind name="quiesce" type="boolean" export-name="quiesce">
+                <description>If TRUE and the virtual machine is powered on when the snapshot is taken, VMware Tools are used to quiesce the file system in the virtual machine.</description>
+            </bind>
+        </in-binding>
+        <out-binding>
+            <bind name="snapshot" type="VC:VirtualMachineSnapshot" export-name="snapshot">
+                <description>The snapshot created</description>
+            </bind>
+        </out-binding>
+        <description> </description>
+        <position y="60.0" x="320.0"/>
+    </workflow-item>
+    <presentation/>
+</ns2:workflow>

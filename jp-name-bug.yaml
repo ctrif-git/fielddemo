@@ -1,0 +1,40 @@
+inputs:
+  vrops-ova:
+    type: string
+    title: My OVA Image
+    default: 'http://10.149.95.226:8080/ddc-1.3.ova'
+    description: Web URL for downloading OVA Image
+  name-ova:
+    type: string
+    title: My OVA Name
+    default: Workload
+    description: Type of workload at OVA Image
+resources:
+  '${input.name-ova}':
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      cpuCount: 4
+      totalMemoryMB: 16000
+      networks:
+        - name: '${resource.wpnet.name}'
+          network: '${resource.wpnet.id}'
+      tags:
+        - key: infrastructure
+          value: operations
+      imageRef: '${input.vrops-ova}'
+      storage:
+        maxDiskCapacityInGB: 150
+        bootDiskCapacityInGB: 150
+  wpnet:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      name: wpnet
+      networkType: existing

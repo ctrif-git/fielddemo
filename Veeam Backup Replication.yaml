@@ -1,0 +1,76 @@
+inputs: {}
+resources:
+  Cloud_Network_1:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      name: network1
+      networkType: existing
+  Tango-Veeam:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      imageRef: >-
+        https://s3-us-west-2.amazonaws.com/market-place-ovf-template/Private/Veeam/VeeamBackupReplicationv9.5.ova
+      cpuCount: 2
+      totalMemoryMB: 12288
+      provisioningType: thin
+      isVsphereOvfPrefixed: true
+      isVsphereOvfCached: false
+      ovfProperties:
+        - key: cis.appliance.administrator.passwd
+          value: VMware1!
+        - key: cis.appliance.host.name
+          value: ''
+        - key: cis.appliance.net.addr
+          value: ''
+        - key: cis.appliance.net.addr.family
+          value: ipv4
+        - key: cis.appliance.net.disable.ipv6
+          value: 'False'
+        - key: cis.appliance.net.dns.servers
+          value: >-
+            ${resource.Cloud_Network_1.dns[0]},${resource.Cloud_Network_1.dns[1]}
+        - key: cis.appliance.net.gateway
+          value: '${resource.Cloud_Network_1.gateway}'
+        - key: cis.appliance.net.mode
+          value: dhcp
+        - key: cis.appliance.net.prefix
+          value: ''
+        - key: cis.appliance.ntp.servers
+          value: ntp_ip
+        - key: cis.appliance.rdp.enabled
+          value: 'True'
+        - key: cis.appliance.time.tools-sync
+          value: 'False'
+        - key: cis.configure
+          value: 'False'
+        - key: veeam.em.install
+          value: 'False'
+        - key: veeam.license
+          value: license_key
+        - key: veeam.repository.fqdn
+          value: ''
+        - key: veeam.repository.username
+          value: mpdemo
+        - key: veeam.repository.password
+          value: testtesttest
+        - key: veeam.vcenter.fqdn
+          value: vCenter_fqdn
+        - key: veeam.vcenter.username
+          value: vCenter_user
+        - key: veeam.vcenter.password
+          value: VMware1!
+        - key: veeam.veeamsvc.passwd
+          value: VMware1!
+        - key: veeam.veeamsvc.username
+          value: VeeamSvc
+      networks:
+        - name: '${Cloud_Network_1.name}'
+          assignment: dynamic

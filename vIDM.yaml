@@ -1,0 +1,102 @@
+inputs:
+  LCM_Version:
+    title: LCM Version
+    type: string
+    default: 'http://build-squid.eng.vmware.com/build/mts/release/bora-15177123/publish/exports/ova/VMware-vLCM-Appliance-8.0.1.1-15177123_OVF10.ova'
+    oneOf:
+      - title: vRLCM 8.0.1 15177123
+        const: 'http://build-squid.eng.vmware.com/build/mts/release/bora-15177123/publish/exports/ova/VMware-vLCM-Appliance-8.0.1.1-15177123_OVF10.ova'
+    description: The version of vRLCM to use for provisioning
+  vIDM_Version:
+    title: vIDM Version
+    type: string
+    description: Full Buildweb URL for vIDM OVA/OVF
+  keep_Lcm:
+    title: Keep LCM VM after deployment finishes
+    type: boolean
+    default: false
+    enum:
+      - false
+      - true
+    description: LCM VM is deleted after deployment unless otherwise specified.
+resources:
+  Cava-Tango-LCM:
+    type: Cloud.vSphere.Machine
+    dependsOn:
+      - Cava-Tango-vIDM
+    metadata:
+      layoutPosition:
+        - 0
+        - 1
+    properties:
+      imageRef: '${input.LCM_Version}'
+      cpuCount: 2
+      totalMemoryMB: 16384
+      resourceGroupName: CAVA
+      provisioningType: thin
+      keepLcm: '${input.keep_Lcm}'
+      adminUsername: admin@local
+      adminPassword: vmware
+      ovfProperties:
+        - key: varoot-password
+          value: VMware1!
+        - key: va-ssh-enabled
+          value: 'True'
+        - key: gateway
+          value: '${Cloud_vSphere_Network_1.gateway}'
+        - key: ip0
+          value: '${self.networks[0].address}'
+        - key: domain
+          value: '${Cloud_vSphere_Network_1.domain}'
+        - key: searchpath
+          value: '${Cloud_vSphere_Network_1.dnsSearchDomains[0]},${Cloud_vSphere_Network_1.dnsSearchDomains[1]}'
+        - key: DNS
+          value: '${Cloud_vSphere_Network_1.dns[0]},${Cloud_vSphere_Network_1.dns[1]}'
+        - key: netmask0
+          value: '${Cloud_vSphere_Network_1.netmask}'
+      networks:
+        - name: '${Cloud_vSphere_Network_1.name}'
+          network: '${resource.Cloud_vSphere_Network_1.id}'
+  Cava-Tango-vIDM:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 2
+    properties:
+      imageRef: '${input.vIDM_Version}'
+      cpuCount: 4
+      totalMemoryMB: 18432
+      vidmRootPassword: VMware1!
+      vidmSshPassword: VMware1!
+      vidmAdminEmail: configuser@vmware.com
+      vidmAdminDefaultConfigurationUsername: configadmin
+      vidmAdminPassword: VMware1!
+      vidmSystemAdminPassword: VMware1!
+      ovfProperties:
+        - key: gateway
+          value: '${Cloud_vSphere_Network_1.gateway}'
+        - key: ip0
+          value: '${self.networks[0].address}'
+        - key: domain
+          value: '${Cloud_vSphere_Network_1.domain}'
+        - key: searchpath
+          value: '${Cloud_vSphere_Network_1.dnsSearchDomains[0]},${Cloud_vSphere_Network_1.dnsSearchDomains[1]}'
+        - key: DNS
+          value: '${Cloud_vSphere_Network_1.dns[0]},${Cloud_vSphere_Network_1.dns[1]}'
+        - key: netmask0
+          value: '${Cloud_vSphere_Network_1.netmask}'
+      networks:
+        - name: '${Cloud_vSphere_Network_1.name}'
+          network: '${resource.Cloud_vSphere_Network_1.id}'
+  Cloud_vSphere_Network_1:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      name: vRA_Network
+      networkType: existing
+      constraints:
+        - tag: static-ip

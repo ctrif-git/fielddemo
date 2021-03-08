@@ -1,0 +1,17 @@
+tags: dhcp
+inputs: {}
+resources:
+  Cava-Tango-CentOS:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 1
+        - 1
+    properties:
+      imageRef: ENV7-CentOS7x64
+      cpuCount: 1
+      totalMemoryMB: 512
+      resourceGroupName: /Datacenters/us08vcore1vc1/vm/CAVA
+      provisioningType: thin
+      customizationSpec: SQA Domain - Linux
+      image: null

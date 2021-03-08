@@ -1,0 +1,47 @@
+inputs:
+  vRLIVersion:
+    title: vRLI Version
+    type: string
+    default: 'http://build-squid.eng.vmware.com/build/mts/release/bora-9983377/publish/VMware-vRealize-Log-Insight-4.7.0-9983377_OVF10.ova'
+    enum:
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-9983377/publish/VMware-vRealize-Log-Insight-4.7.0-9983377_OVF10.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-10739230/publish/VMware-vRealize-Log-Insight-4.6.2-10739230.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-8597028/publish/VMware-vRealize-Log-Insight-4.6.1-8597028.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-8080673/publish/VMware-vRealize-Log-Insight-4.6.0-8080673.ova  '
+    description: |
+      LCM 4.7.0 = VMware-vRealize-Log-Insight-4.7.0-9983377_OVF10.ova 
+      LCM 4.6.2 = VMware-vRealize-Log-Insight-4.6.2-10739230.ova
+      LCM 4.6.1 = VMware-vRealize-Log-Insight-4.6.1-8597028.ova
+      LCM 4.6.0 = VMware-vRealize-Log-Insight-4.6.0-8080673.ova
+  #NB! need to figure out how to customize SSh root property value
+  username:
+    type: string
+    title: Username
+    description: Username to install Puppet agent
+    default: root
+  password:
+    type: string
+    title: Password
+    default: VMware1!
+    encrypted: true
+    description: Password for User to install Puppet agent
+resources:
+  Puppet-vRLI:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      imageRef: '${input.vRLIVersion}'
+      cpuCount: 4
+      totalMemoryMB: 8192
+      folderName: CAVA
+      provisioningType: thin
+      ovfProperties:
+        - key: vm.rootpw
+          value: VMware1!
+      remoteAccess:
+        authentication: usernamePassword
+        username: '${input.username}'
+        password: '${input.password}'

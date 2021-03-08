@@ -1,0 +1,28 @@
+formatVersion: 1
+inputs:
+  displayname:
+    type: string
+    title: Display Name
+    description: Please specify the Cloud Proxy Display Name
+  otk:
+    type: string
+    title: OTK
+    description: Please generate One Time Key from the Cloud Proxy UI
+resources:
+  Cloud_Proxy:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      imageRef: 'https://ci-data-collector.s3.amazonaws.com/VMware-Cloud-Services-Data-Collector.ova'
+      cpuCount: 4
+      totalMemoryMB: 12288
+      ovfProperties:
+        - key: rdc_name
+          value: '${input.displayname}'
+        - key: itfm_root_password
+          value: VMware1!
+        - key: ONE_TIME_KEY
+          value: '${input.otk}'

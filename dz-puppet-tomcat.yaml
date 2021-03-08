@@ -1,0 +1,44 @@
+inputs:
+  username:
+    type: string
+    title: Username
+    description: Username to use to install Puppet agent
+    default: root
+  password:
+    type: string
+    title: Password
+    default: Password!
+    encrypted: true
+    description: Password for the given username to install Puppet agent
+resources:
+  Puppet-Ubuntu:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      imageRef: 'http://sc-prd-rdops-templates.eng.vmware.com/nimbus-templates/ucp/ucptemplates/CentOS_VMwareTools10.1/CentOS_VMTools10.1.ovf'
+      cpuCount: 2
+      totalMemoryMB: 2048
+      remoteAccess:
+        authentication: usernamePassword
+        username: '${input.username}'
+        password: '${input.password}'
+  Puppet_Agent:
+    type: Cloud.Puppet
+    metadata:
+      layoutPosition:
+        - 0
+        - 1
+    properties:
+      useSudo: true
+      osType: linux
+      provider: sk-puppetmaster
+      environment: production
+      role: 'role::linux_base'
+      username: '${input.username}'
+      password: '${input.password}'
+      agentConfiguration:
+        certName: '${resource["Puppet-Ubuntu"].address}'
+      host: '${resource["Puppet-Ubuntu"].*}'

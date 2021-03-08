@@ -1,0 +1,12 @@
+inputs: {}
+resources:
+  Cloud_vSphere_Machine_1:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      cpuCount: 1
+      imageRef: 'http://10.153.176.253/OVAs/NVE-99.0.99.732-5.ovf'
+      totalMemoryMB: 4096

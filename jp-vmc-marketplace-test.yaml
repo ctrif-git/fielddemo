@@ -1,0 +1,15 @@
+formatVersion: 1
+inputs: {}
+resources:
+  Cloud_vSphere_Machine_1:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      imageRef: 'https://s3.us-east-2.amazonaws.com/cspmkptangotest/bitnami-nginx-1.14.2-4-linux-debian-9-x86_64.ova'
+      cpuCount: 1
+      totalMemoryMB: 512
+      constraints:
+        - tag: vmc

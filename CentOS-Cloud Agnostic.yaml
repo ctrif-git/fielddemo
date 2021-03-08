@@ -1,0 +1,11 @@
+inputs: {}
+resources:
+  Cava-Tango-CloudBP:
+    type: Cloud.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      flavor: small
+      image: CentOS

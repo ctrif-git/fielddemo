@@ -1,0 +1,40 @@
+inputs:
+  vRA_Version:
+    title: vRA Version
+    type: string
+    default: 'http://build-squid.eng.vmware.com/build/mts/release/bora-10053539/publish/exports/ova/VMware-vR-Appliance-7.5.0.458-10053539_OVF10.ova'
+    enum:
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-3311738/publish/exports/ova/VMware-vR-Appliance-7.0.0.1460-3311738_OVF10.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-3622989/publish/exports/ova/VMware-vR-Appliance-7.0.1.150-3622989_OVF10.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-4270058/publish/exports/ova/VMware-vR-Appliance-7.1.0.710-4270058_OVF10.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-4660246/publish/exports/ova/VMware-vR-Appliance-7.2.0.381-4660246_OVF10.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-5493917/publish/exports/ova/VMware-vR-Appliance-7.3.0.536-5493917_OVF10.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-8004225/publish/exports/ova/VMware-vR-Appliance-7.3.1.71-8004225_OVF10.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-8229492/publish/exports/ova/VMware-vR-Appliance-7.4.0.645-8229492_OVF10.ova'
+      - 'http://build-squid.eng.vmware.com/build/mts/release/bora-10053539/publish/exports/ova/VMware-vR-Appliance-7.5.0.458-10053539_OVF10.ova'
+  resources_for_AD:
+    title: AD Size
+    type: string
+    default: vRA-Small AD (<100k entries)
+    enum:
+      - vRA-Small AD (<100k entries)
+      - vRA-Medium AD (200k entries)
+      - vRA-Large AD (500k entries)
+    description: The amount of resources your VA needs is based on the number of users in the AD you're syncing.
+resources:
+  Tango-vRA:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      imageRef: '${input.vRA_Version}'
+      flavor: '${input.resources_for_AD}'
+      folderName: CAVA
+      provisioningType: thin
+      ovfProperties:
+        - key: varoot-password
+          value: VMware1!
+        - key: va-ssh-enabled
+          value: 'True'

@@ -1,0 +1,17 @@
+tags: dhcp
+inputs: {}
+resources:
+  Cava-Tango-CentOS:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 1
+        - 1
+    createTimeout: 4h
+    properties:
+      image: CentOS
+      cpuCount: 1
+      totalMemoryMB: 512
+      resourceGroupName: CAVA
+      provisioningType: thin
+      customizationSpec: SQA Domain - Linux

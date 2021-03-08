@@ -1,0 +1,148 @@
+inputs:
+  LCM_Version:
+    title: LCM Version
+    type: string
+    description: The version of vRLCM to use for provisioning
+  vRA_Version:
+    title: vRA Version
+    type: string
+    description: Full Buildweb URL for vrva OVA/OVF
+  resources_for_AD:
+    title: AD Size
+    type: string
+    default: vRA-Small AD (<100k entries)
+    enum:
+      - vRA-Small AD (<100k entries)
+      - vRA-Medium AD (200k entries)
+      - vRA-Large AD (500k entries)
+    description: The amount of resources your VA needs is based on the number of users in the AD you're syncing.
+  vra_license:
+    title: vRA License Key
+    type: string
+    description: License Key used for your vRA deployment
+  install_content:
+    title: Install Content
+    type: string
+    default: qe
+    oneOf:
+      - title: QE Content only
+        const: qe
+      - title: CAT and QE content
+        const: e2e-customized-provisioning.xml
+      - title: No Content
+        const: none
+    description: 'To install Default QE content(i.e. fritz user account), e2e CAT content with QE Content, or none'
+  keep_Lcm:
+    title: Keep LCM VM after deployment finishes
+    type: boolean
+    default: false
+    enum:
+      - false
+      - true
+    description: LCM VM is deleted after deployment unless otherwise specified.
+resources:
+  Cava-Tango-vRA:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      imageRef: '${input.vRA_Version}'
+      flavor: '${input.resources_for_AD}'
+      folderName: CAVA
+      provisioningType: thin
+      ntpServer: time1.oc.vmware.com
+      license: '${input.vra_license}'
+      installContent: '${input.install_content}'
+      ovfProperties:
+        - key: varoot-password
+          value: VMware1!
+        - key: va-ssh-enabled
+          value: 'True'
+        - key: gateway
+          value: '${Cloud_vSphere_Network_1.gateway}'
+        - key: ip0
+          value: '${self.networks[0].address}'
+        - key: domain
+          value: '${Cloud_vSphere_Network_1.domain}'
+        - key: searchpath
+          value: '${Cloud_vSphere_Network_1.dnsSearchDomains[0]},${Cloud_vSphere_Network_1.dnsSearchDomains[1]}'
+        - key: DNS
+          value: '${Cloud_vSphere_Network_1.dns[0]},${Cloud_vSphere_Network_1.dns[1]}'
+        - key: netmask0
+          value: '${Cloud_vSphere_Network_1.netmask}'
+      networks:
+        - name: '${Cloud_vSphere_Network_1.name}'
+          network: '${resource.Cloud_vSphere_Network_1.id}'
+  Cava-Tango-LCM:
+    type: Cloud.vSphere.Machine
+    dependsOn:
+      - Cava-Tango-vRA
+      - Cava-Tango-IaaS
+    metadata:
+      layoutPosition:
+        - 0
+        - 1
+    createTimeout: 4h
+    properties:
+      imageRef: '${input.LCM_Version}'
+      cpuCount: 4
+      totalMemoryMB: 16384
+      resourceGroupName: CAVA
+      provisioningType: thin
+      keepLcm: '${input.keep_Lcm}'
+      adminUsername: admin@local
+      adminPassword: vmware
+      ovfProperties:
+        - key: varoot-password
+          value: VMware1!
+        - key: va-ssh-enabled
+          value: 'True'
+        - key: gateway
+          value: '${Cloud_vSphere_Network_1.gateway}'
+        - key: ip0
+          value: '${self.networks[0].address}'
+        - key: domain
+          value: '${Cloud_vSphere_Network_1.domain}'
+        - key: searchpath
+          value: '${Cloud_vSphere_Network_1.dnsSearchDomains[0]},${Cloud_vSphere_Network_1.dnsSearchDomains[1]}'
+        - key: DNS
+          value: '${Cloud_vSphere_Network_1.dns[0]},${Cloud_vSphere_Network_1.dns[1]}'
+        - key: netmask0
+          value: '${Cloud_vSphere_Network_1.netmask}'
+      networks:
+        - name: '${Cloud_vSphere_Network_1.name}'
+          network: '${resource.Cloud_vSphere_Network_1.id}'
+  Cava-Tango-IaaS:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 2
+    properties:
+      image: MSSQL2016
+      cpuCount: 4
+      totalMemoryMB: 8192
+      ntpServer: time1.oc.vmware.com
+      timeZone: UTC
+      iaasUsername: Administrator
+      iaasPassword: VMware1!
+      iaasDbPassprase: 1234
+      iaasDatabaseName: vcac
+      iaasDatabaseUser: sa
+      # customizationSpec: Windows2012-Prod
+      networks:
+        - name: '${Cloud_vSphere_Network_1.name}'
+          network: '${resource.Cloud_vSphere_Network_1.id}'
+  Cloud_vSphere_Network_1:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      name: vRA_Network
+      networkType: existing
+      constraints:
+        - tag: static-ip

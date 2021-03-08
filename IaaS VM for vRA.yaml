@@ -1,0 +1,37 @@
+formatVersion: 1
+inputs: {}
+resources:
+  Cava-Tango-IaaS:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    PropertyGroup:
+      <Property Group Name>: '<Property>:<default value>'
+    properties:
+      image: MSSQL2016
+      cpuCount: 4
+      totalMemoryMB: 8192
+      ntpServer: time1.oc.vmware.com
+      timeZone: UTC
+      iaasUsername: Administrator
+      iaasPassword: VMware1!
+      iaasDbPassprase: 1234
+      iaasDatabaseName: vcac
+      iaasDatabaseUser: sa
+      # customizationSpec: Windows2012-Prod
+      networks:
+        - name: '${Cloud_vSphere_Network_1.name}'
+          network: '${resource.Cloud_vSphere_Network_1.id}'
+  Cloud_vSphere_Network_1:
+    type: Cloud.Network
+    metadata:
+      layoutPosition:
+        - 1
+        - 0
+    properties:
+      name: vRA_Network
+      networkType: existing
+      constraints:
+        - tag: static-ip

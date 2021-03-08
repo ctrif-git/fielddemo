@@ -1,0 +1,19 @@
+inputs: {}
+resources:
+  Tango-PG:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    tags: dhcp
+    properties:
+      imageRef: 'http://build-squid.eng.vmware.com/build/mts/release/bora-10053539/publish/exports/ova/VMware-vR-Appliance-7.5.0.458-10053539_OVF10.ova'
+      flavor: vRA-Small AD (<100k entries)
+      folderName: CAVA
+      provisioningType: thin
+      ovfProperties:
+        - key: varoot-password
+          value: VMware1!
+        - key: va-ssh-enabled
+          value: 'True'

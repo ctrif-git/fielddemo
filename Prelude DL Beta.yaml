@@ -1,0 +1,11 @@
+formatVersion: 1
+inputs: {}
+resources:
+  Cloud_vSphere_Machine_1:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      imageref: 'http://build-squid.eng.vmware.com/build/mts/release/bora-14025783/publish/exports/ova/Prelude_VA-1.1.0.3-14025783_OVF10.ova'

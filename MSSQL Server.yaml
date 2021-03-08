@@ -1,0 +1,31 @@
+inputs:
+  MSSQL_Version:
+    title: MSSQL Version
+    type: string
+    default: MSSQL2016
+    enum:
+      - MSSQL2008R2-Express
+      - MSSQL2008R2
+      - MSSQL2012
+      - MSSQL2014
+      - MSSQL2016
+  Domain:
+    title: Domain
+    type: string
+    default: VMware Domain - Windows
+    enum:
+      - VMware Domain - Windows
+      - SQA Domain - Windows
+      - Windows WORKGROUP
+resources:
+  MSSQL:
+    type: Cloud.vSphere.Machine
+    metadata:
+      layoutPosition:
+        - 0
+        - 0
+    properties:
+      flavor: medium
+      image: '${input.MSSQL_Version}'
+      customizationSpec: '${input.Domain}'
+      folderName: CAVA
